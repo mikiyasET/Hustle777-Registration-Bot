@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model admin {
+  id       Int     @id @default(autoincrement())
+  name     String? @unique(map: "unq_admin_name") @db.VarChar(100)
+  username String? @unique(map: "unq_admin_username") @db.VarChar(100)
+  password String? @db.VarChar(255)
+  user_id  Int?    @unique
+  users    users?  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_admin_users")
+
+  @@index([user_id], map: "fk_admin_users")
+}
+
+model users {
+  id         Int         @id @default(autoincrement())
+  tg_id      String      @unique(map: "telegramUsers_tg_id_key")
+  username   String?     @db.VarChar(100)
+  fname      String?     @db.VarChar(100)
+  lname      String?     @db.VarChar(100)
+  status     Status      @default(UNACTIVE)
+  admin      admin?
+  botTalkers botTalkers?
+  captcha    captcha?
+  accounts   accounts[]
+}
+
+model botTalkers {
+  id       Int     @id @default(autoincrement())
+  user_id  Int     @unique(map: "botTalkers_tid_key")
+  current  String? @db.VarChar(100)
+  previous String? @db.VarChar(255)
+  waiting  Int     @default(0)
+  users    users   @relation(fields: [user_id], references: [id], map: "botTalkers_tid_fkey")
+
+  @@index([user_id], map: "fk_tg_user_talking")
+}
+
+model accounts {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique(map: "accounts_username_key") @db.VarChar(100)
+  password   String   @db.VarChar(255)
+  promo_code String?  @db.VarChar(100)
+  user_id    Int?     @unique(map: "accounts_user_id_key")
+  status     Status   @default(UNACTIVE)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  users    users?     @relation(fields: [user_id], references: [id], map: "fk_accounts_users")
+  requests requests[]
+}
+
+model requests {
+  id         Int           @id @default(autoincrement())
+  account_id Int
+  status     RequestStatus @default(PENDING)
+  acounts    accounts      @relation(fields: [account_id], references: [id], map: "fk_requests_accounts")
+}
+
+model captcha {
+  id        Int           @id @default(autoincrement())
+  user_id   Int           @unique(map: "captcha_user_id_key")
+  captcha   String        @db.VarChar(255) @unique(map: "captcha_captcha_key")
+  status    captchaStatus @default(UNSOLVED)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  users users? @relation(fields: [user_id], references: [id], map: "fk_captcha_users")
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum Status {
+  UNACTIVE
+  ACTIVE
+  COLD
+  BANNED
+}
+
+enum captchaStatus {
+  UNSOLVED
+  SOLVED
+}

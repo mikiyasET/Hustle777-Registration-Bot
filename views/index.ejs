@@ -1,0 +1,35 @@
+<% if (valid == true) { %>
+    <div class="captcha-box">
+        <h5>Please solve the following captcha</h5>
+        <form action="/verify/<%= captcha_id %>" method="POST">
+            <div class="h-captcha" data-sitekey="65ef415f-c62e-4ff5-82ac-ebfbbeb6c2af"></div>
+            <br />
+            <input class="custom-btn" type="submit" value="Submit" />
+        </form>
+    </div>
+<% } else { %>
+    <style>
+        div {
+            /* center */
+            padding: 15% 30%;
+        }
+        div > h1 {
+            text-align: center;
+            color: #ddd;
+        }
+        /* mobile */
+        @media only screen and (max-width: 900px) {
+            div {
+                padding: 35% 10%;
+            }
+            div > h1 {
+                text-align: center;
+                color: #ddd;
+                font-size: 2rem;
+            }
+        }
+</style>
+    <div>
+        <h1>You have already solved the captcha</h1>
+    </div>
+<% } %>

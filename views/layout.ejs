@@ -1,0 +1,84 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hCaptcha Demo</title>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Cabin:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:900" rel="stylesheet">
+</head>
+<body>
+<style>
+    .captcha-box {
+        width: 400px;
+        margin: 10% auto;
+        padding: 3%;
+        text-align: center;
+        /*border: 1px solid #ccc;*/
+        border-radius: 5px;
+    }
+    .custom-btn {
+        width: 100%;
+        height: 40px;
+        color: #fff;
+        border-radius: 5px;
+        padding: 10px 25px;
+        font-family: 'Lato', sans-serif;
+        font-weight: 500;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        display: inline-block;
+        box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
+        7px 7px 20px 0px rgba(0,0,0,.1),
+        4px 4px 5px 0px rgba(0,0,0,.1);
+        outline: none;
+        background: #37ABCD;
+        background: linear-gradient(157deg, #7BE5DA 8%, #0082BF 87%);
+        border: none;
+    }
+    .custom-btn:hover {
+        box-shadow:  4px 4px 6px 0 rgba(255,255,255,.5),
+        -4px -4px 6px 0 rgba(116, 125, 136, .5),
+        inset -4px -4px 6px 0 rgba(255,255,255,.2),
+        inset 4px 4px 6px 0 rgba(0, 0, 0, .4);
+    }
+
+    /* media query mobile */
+    @media only screen and (max-width: 1300px) {
+        .custom-btn {
+            width: 92%;
+        }
+    }
+    @media only screen and (max-width: 1100px) {
+        .custom-btn {
+            width: 88%;
+        }
+    }
+    @media only screen and (max-width: 650px) {
+        .custom-btn {
+            width: 82%;
+        }
+    }
+</style>
+    <%- body %>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("form").submit(function (event) {
+            var recaptcha = $("iframe").attr('data-hcaptcha-response');
+            if (recaptcha === "" || recaptcha === undefined) {
+                // get value of an attribute data-hcaptcha-response
+                console.log("recaptcha is empty");
+                event.preventDefault();
+                $(".h-captcha").css("border", "1px solid red");
+            }else {
+                $(".h-captcha").css("border", "1px solid green");
+            }
+        });
+    });
+
+</script>
+</body>
+</html>
