@@ -1,7 +1,7 @@
 <% if (valid == true) { %>
     <div class="captcha-box">
         <h5>Please solve the following captcha</h5>
-        <form action="/verify/<%= captcha_id %>" method="POST">
+        <form action="/v/<%= captcha_id %>" method="POST">
             <div class="h-captcha" data-sitekey="65ef415f-c62e-4ff5-82ac-ebfbbeb6c2af"></div>
             <br />
             <input class="custom-btn" type="submit" value="Submit" />

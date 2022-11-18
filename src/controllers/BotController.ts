@@ -52,7 +52,7 @@ export class BotController {
                 if (await userObj.isActive()) {
                     const admin = new AdminC({user_id: user_id});
                     this.isAdmin = (await admin.exists());
-                    if (!(await this.checkAccount(user_id)) || this.text == "/admin") {
+                    if (!(await this.checkAccount(user_id)) || this.text == "/admin" || (this.isAdmin && this.text.startsWith("/sendusername"))) {
                         this.talker.user_id = user_id;
                         this.text = this.text[0] == '/' ? this.text.slice(1) : this.text;
                         if (await this.talker.isWaiting()) {
@@ -71,19 +71,12 @@ export class BotController {
     }
     async watch() {
         try {
-            if (this.text == "start" || this.text == "restart") {
-                await this.back("menu");
-                return true;
-            }
             switch (await this.talker.getCurrent()) {
-                case "register_username":
-                    await this.registerMessages.askPassword();
-                    break;
+                // case "register_username":
+                //     await this.registerMessages.askPassword();
+                //     break;
                 case "register_password":
                     switch (this.text) {
-                        case "🔙 Back":
-                            await this.back("username");
-                            break;
                         default:
                             await this.registerMessages.askConfirmPassword();
                     }
@@ -143,7 +136,13 @@ export class BotController {
                 }
                 break;
             default:
-                await this.basicMessages.unknownCommand();
+                if (this.text.startsWith("sendusername")) {
+                    if (this.isAdmin) {
+                        await this.sendUsername();
+                    }
+                }else {
+                    await this.basicMessages.unknownCommand();
+                }
                 break;
         }
     }
@@ -154,7 +153,6 @@ export class BotController {
     }
     async checkAccount(user_id:number) {
         if (this.isAdmin) {
-            await this.basicMessages.heyAdmin();
             return true;
         }else {
             const account = new AccountC({user_id: user_id});
@@ -184,10 +182,7 @@ export class BotController {
         }
     }
     async back(to:string) {
-        if (to == "username") {
-            await this.registerMessages.askUsername();
-        }
-        else if (to == "password") {
+        if (to == "password") {
             const pre:string[] | undefined = (await this.talker.getPrevious())?.split(",");
             this.talker.previous = pre?.[0];
             this.talker.current = "register_password";
@@ -247,9 +242,41 @@ export class BotController {
             }
         } else {
             if (!this.isAdmin) {
-                await this.registerMessages.askUsername();
+                await this.registerMessages.askPassword();
             }
         }
     }
-
+    async sendUsername() {
+        // /sendusername <id> <username>
+        let data = this.text.split(" ");
+        data = data.filter(function (el:any) {
+            return el != null;
+        });
+        const id = data[1].trim();
+        const username = data[2].trim();
+        if (data.length == 3) {
+            if (!isNaN(id)) {
+                const account = new AccountC({id: parseInt(id)});
+                if (await account.check()) {
+                    const acs = await account.get();
+                    const user = new UsersC({id: acs.user_id});
+                    account.username = username;
+                    if (!(await account.checkUsername())) {
+                        const acc = await account.setUsername();
+                        const tg_id = (await user.get()).tg_id;
+                        await this.ctx.telegram.sendMessage(tg_id, `<b>Account information</b>\n\nUsername: <code>${username}</code>\nPassword: ${acc.password}`, {parse_mode: "HTML"});
+                        await this.ctx.reply("Username sent to id: " + id);
+                    }else {
+                        await this.ctx.reply("Username already exists, please assign another username");
+                    }
+                }else {
+                    this.ctx.reply("User not found");
+                }
+            }else {
+                this.ctx.reply("Invalid ID");
+            }
+        }else {
+            await this.ctx.reply("Invalid command");
+        }
+    }
 }

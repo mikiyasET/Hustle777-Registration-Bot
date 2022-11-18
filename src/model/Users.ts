@@ -97,6 +97,7 @@ export class UsersM {
             }
         })).tg_id;
     }
+
     async isActive():Promise<boolean> {
         const user = (await prisma.users.findUnique({
             where: {
@@ -108,7 +109,6 @@ export class UsersM {
         }
         return user.status == Status.ACTIVE;
     }
-
     async Activate() {
         return await prisma.users.update({
             where: {

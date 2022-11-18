@@ -4,8 +4,6 @@
     <title>hCaptcha Demo</title>
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Cabin:400,700" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:900" rel="stylesheet">
 </head>
 <body>
 <style>
@@ -72,9 +70,9 @@
                 // get value of an attribute data-hcaptcha-response
                 console.log("recaptcha is empty");
                 event.preventDefault();
-                $(".h-captcha").css("border", "1px solid red");
+                $("iframe").css("border", "1px solid red");
             }else {
-                $(".h-captcha").css("border", "1px solid green");
+                $("iframe").css("border", "1px solid green");
             }
         });
     });

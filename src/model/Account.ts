@@ -44,7 +44,6 @@ export class AccountM {
     async create() {
         return await prisma.accounts.create({
             data: {
-                username: this.username,
                 password: this.password,
                 promo_code: this.promo_code,
                 user_id: this.user_id
@@ -68,6 +67,16 @@ export class AccountM {
         return await prisma.accounts.delete({
             where: {
                 id: this.id
+            }
+        })
+    }
+    async setUsername() {
+        return await prisma.accounts.update({
+            where: {
+                id: this.id
+            },
+            data: {
+                username: this.username
             }
         })
     }

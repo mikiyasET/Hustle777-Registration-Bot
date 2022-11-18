@@ -34,7 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(expressLayouts);
 
-app.post('/verify/:token', (req:any, res:any) => {
+app.post('/v/:token', (req:any, res:any) => {
     // bot.telegram.sendMessage(req.params.user, `Hello`);
     const token = req.body['h-captcha-response'];
     verify(SECRET, token)
@@ -54,22 +54,22 @@ app.post('/verify/:token', (req:any, res:any) => {
                         const talker = new BotTalkersC({user_id: user.id})
                         await talker.gets(user.tg_id);
                         talker.previous = await talker.getCurrent();
-                        talker.current = "register_username";
+                        talker.current = "register_password";
                         await talker.talk();
-                        await bot.telegram.sendMessage(user.tg_id, "Please enter your username");
+                        await bot.telegram.sendMessage(user.tg_id, "Please choose your password");
                     }
                 }
-                res.render('success');
+                res.render('success',{layout: false});
             }else {
-                res.render('failure');
+                res.render('failure',{layout: false});
             }
         } else {
-            res.render('failure')
+            res.render('failure',{layout: false})
         }
     })
     .catch((err:any) => {
         console.log(err);
-        res.render('failure')
+        res.render('failure',{layout: false})
     });
 });
 app.get('/captcha/:captcha', async (req: any, res: any) => {
@@ -84,18 +84,18 @@ app.get('/captcha/:captcha', async (req: any, res: any) => {
         }
     } else {
         // show 404 page
-        res.status(404).render('404');
+        res.status(404).render('404',{layout: false});
     }
 });
 app.get('/success', (req: any, res: any) => {
-    res.render('success');
+    res.render('success',{layout: false});
 });
 app.get('/failure', (req: any, res: any) => {
-    res.render('failure');
+    res.render('failure',{layout: false});
 });
 // else show 404 page
 app.get('*', (req: any, res: any) => {
-    res.status(404).render('404');
+    res.status(404).render('404',{layout: false});
 });
 app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`);

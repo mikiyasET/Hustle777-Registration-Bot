@@ -30,18 +30,19 @@ const onCallback = (bot:any) => {
                         await accountObj.activate();
                         const account = await accountObj.get();
                         ctx.answerCbQuery("Confirmed");
-                        const edited = text.replace("New account request", "✅ Account Confirmed")
+                        let edited = text.replace("New account request", "✅ Account Confirmed")
+                        edited = `${edited.split("|")[0]}| <code>${edited.split("|")[1]}</code> |${edited.split("|")[2]}`
                         ctx.deleteMessage(message_id);
-                        ctx.reply(edited);
+                        ctx.reply(edited, {parse_mode: "HTML"});
                         const User = new UsersC({id: account.user_id});
-                        ctx.telegram.sendMessage(await User.getTgID(), "<b>Congratulations!!</b>\n\nYour account was has reviewed and accepted confirmed.", {parse_mode: "HTML"});
+                        ctx.telegram.sendMessage(await User.getTgID(), "<b>Congratulations!!</b>\n\nYour account has been reviewed and created.", {parse_mode: "HTML"});
                     } else {
                         const req = new RequestC({id: id});
                         ctx.answerCbQuery("Rejected");
-                        const edited = text.replace("New account request", "❌ Account Rejected");
+                        let edited = text.replace("New account request", "❌ Account Rejected");
+                        edited = `${edited.split("|")[0]}${edited.split("|")[2]}`
                         ctx.deleteMessage(message_id);
-                        ctx.reply(edited);
-                        console.log(id);
+                        ctx.reply(edited, {parse_mode: "HTML"});
                         const request = await req.delete();
                         const accountObj = new AccountC({id: request.account_id});
                         const accounts = await accountObj.delete();
